@@ -1,4 +1,4 @@
-﻿using System;
+﻿using static lab1.Constants;
 
 namespace lab1
 {
@@ -9,23 +9,23 @@ namespace lab1
             var hall = new Hall();
             var friend = new Friend();
 
-            var contender = hall.GetNext();
-            var i = 1;
+            var (i, contender) = hall.GetNext();
             while (contender != null)
             {
-                Logger.Log(contender.ToString());
-                var eChoose = friend.EChoose(i, friend.Remember(contender));
+                var eChoose = friend.EChoose(i, friend.GetRelativeRank(contender));
                 var eSkip = friend.ESkipArray[i - 1];
 
                 if (eChoose >= eSkip)
                     break;
                 
-                contender = hall.GetNext();
-                i++;
+                (i, contender) = hall.GetNext();
             }
 
             Logger.Log("-----");
-            Logger.Log(contender?.ToString());
+            if (contender != null)
+                Logger.Log(contender.Rank > BadMarriageRankBorder ? contender.Rank : BadMarriagePoints);
+            else
+                Logger.Log(MonasteryPoints);
         }
     }
 }

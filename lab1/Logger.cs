@@ -10,9 +10,9 @@ namespace lab1
         static Logger() => 
             File.WriteAllText(Path, string.Empty);
 
-        public static void Log(string message)
+        public static void Log<T>(T message)
         {
-            Console.WriteLine(message);
+            Console.WriteLine(message.ToString());
             File.AppendAllText(Path, message + "\n");
         }
     }

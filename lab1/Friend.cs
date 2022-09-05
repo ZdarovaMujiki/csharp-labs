@@ -1,39 +1,40 @@
 ﻿using System;
 using System.Collections.Generic;
+using static lab1.Constants;
 
 namespace lab1
 {
     class Friend
     {
         private readonly SortedSet<Contender> _contendersTop = new();
-        public readonly double[] ESkipArray = new double[Hall.ContendersAmount];
+        public readonly double[] ESkipArray = new double[ContendersAmount];
         
         public Friend()
         {
             var length = ESkipArray.Length;
-            ESkipArray[length - 1] = Hall.MonasteryPoints;
+            ESkipArray[length - 1] = MonasteryPoints;
 
             for (var i = length - 2; i >= 0; i--)
                 ESkipArray[i] = ESkip(i);
         }
 
-        public int Remember(Contender contender)
+        public int GetRelativeRank(Contender newContender)
         {
-            _contendersTop.Add(contender);
+            _contendersTop.Add(newContender);
             var rank = 0;
-            foreach (var con in _contendersTop)
+            foreach (var contender in _contendersTop)
             {
                 rank++;
-                if (con == contender)
+                if (contender == newContender)
                     break;
             }
 
             return rank;
         }
         public double EChoose(int i, int rank) =>
-            _contendersTop.Count - rank + 1 < 50
-                ? rank * (Hall.ContendersAmount + 1D) / (i + 1)
-                : 0;
+            _contendersTop.Count - rank + 1 < BadMarriageRankBorder
+                ? rank * (ContendersAmount + 1D) / (i + 1)
+                : BadMarriagePoints;
 
         private double ESkip(int i)
         {
