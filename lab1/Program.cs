@@ -7,13 +7,13 @@ static class Program
     private static void Main()
     {
         var hall = new Hall();
-        var friend = new Friend();
+        var princess = new Princess();
 
         var (i, contender) = hall.GetNext();
         while (contender != null)
         {
-            var eChoose = friend.EChoose(i, friend.GetRelativeRank(contender));
-            var eSkip = friend.ESkipArray[i - 1];
+            var eChoose = princess.EChoose(i, princess.GetRelativeRank(contender));
+            var eSkip = princess.ESkipArray[i - 1];
 
             if (eChoose >= eSkip)
                 break;
