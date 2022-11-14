@@ -2,7 +2,7 @@
 
 public record Contender
 {
-    public string? Name { get; init; }
+    public string Name { get; init; }
     public int Rank { get; init; }
 
     public override string ToString()

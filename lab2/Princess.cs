@@ -60,7 +60,7 @@ public class Princess : IHostedService
         _applicationTask = Task.Run(() =>
         {
             var (i, contender) = _hall.GetNext();
-            while (contender != null)
+            while (i < ContendersAmount)
             {
                 var eChoose = EChoose(i, GetRelativeRank(contender));
                 var eSkip = _eSkipArray[i - 1];
