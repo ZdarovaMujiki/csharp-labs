@@ -4,19 +4,16 @@ namespace PrincessAndContenders;
 
 public class Hall
 {
-    public Contender[] Contenders { get; set; } = ContendersGenerator.GenerateContenders(ContendersAmount);
-    private readonly Random _random = new();
+    public readonly Queue<Contender> Contenders = ContendersGenerator.GenerateContenders(ContendersAmount);
 
-    public (int, Contender?) GetNext()
+    public Contender GetNext()
     {
-        if (Contenders.Length == 0) throw new EmptyHallException();
-            
-        var i = _random.Next(Contenders.Length);
-        var contender = Contenders[i];
-        Contenders = Contenders.Where((_, index) => index != i).ToArray();
+        if (!Contenders.TryDequeue(out var contender))
+            throw new EmptyHallException();
+        
         Logger.Log(contender.Name);
 
-        return (ContendersAmount - Contenders.Length, contender);
+        return contender;
     }
 
     public bool Contains(Contender? contender) =>

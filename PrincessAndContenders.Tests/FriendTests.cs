@@ -34,12 +34,10 @@ public class FriendTests
         var hall = new Hall();
         var friend = new Friend(hall);
 
-        var (_, knownContender) = hall.GetNext();
-        var unknownContenderA = hall.Contenders[0];
-        var unknownContenderB = hall.Contenders[1];
+        var knownContender = hall.GetNext();
+        var unknownContender = hall.Contenders.Peek();
 
-        Assert.Throws<UnknownContenderException>(() => friend.Compare(knownContender, unknownContenderB));
-        Assert.Throws<UnknownContenderException>(() => friend.Compare(unknownContenderA, knownContender));
-        Assert.Throws<UnknownContenderException>(() => friend.Compare(unknownContenderA, unknownContenderB));
+        Assert.Throws<UnknownContenderException>(() => friend.Compare(unknownContender, knownContender));
+        Assert.Throws<UnknownContenderException>(() => friend.Compare(knownContender, unknownContender));
     }
 }

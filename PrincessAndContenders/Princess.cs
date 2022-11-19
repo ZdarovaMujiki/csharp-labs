@@ -57,19 +57,18 @@ public class Princess : IHostedService
 
     private Contender? GetBestContender()
     {
-        var (i, contender) = _hall.GetNext();
-        while (i < ContendersAmount)
+        for (var i = 0; i < ContendersAmount; ++i)
         {
-            var eChoose = EChoose(i, GetRelativeRank(contender!));
-            var eSkip = _eSkipArray[i - 1];
+            var contender = _hall.GetNext();
+
+            var eChoose = EChoose(i + 1, GetRelativeRank(contender));
+            var eSkip = _eSkipArray[i];
 
             if (eChoose >= eSkip)
-                break;
-                
-            (i, contender) = _hall.GetNext();
+                return contender;
         }
 
-        return contender;
+        return null;
     }
 
     public static int GetPoints(Contender? contender)

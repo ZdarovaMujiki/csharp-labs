@@ -10,7 +10,7 @@ public class ContendersGeneratorTests
     public void GenerateContenders_ReturnsCorrectLengthArray()
     {
         var contenders = ContendersGenerator.GenerateContenders(ContendersAmount);
-        Assert.That(contenders, Has.Length.EqualTo(ContendersAmount));
+        Assert.That(contenders, Has.Count.EqualTo(ContendersAmount));
     }
     
     [Test]

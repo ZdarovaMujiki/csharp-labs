@@ -8,7 +8,7 @@ public class HallTests
     public void GetNext_HallIsNotEmpty_ReturnsContender()
     {
         var hall = new Hall();
-        var (_, contender) = hall.GetNext();
+        var contender = hall.GetNext();
         Assert.That(contender, Is.InstanceOf<Contender>());
     }
     

@@ -1,10 +1,13 @@
-﻿namespace PrincessAndContenders;
+﻿using PrincessAndContenders.Utils;
+
+namespace PrincessAndContenders;
 
 public static class ContendersGenerator
 {
     private const string Path = "husbands.txt";
+    private static readonly Random Rng = new();
 
-    public static Contender[] GenerateContenders(int amount)
+    public static Queue<Contender> GenerateContenders(int amount)
     {
         var contenders = new Contender[amount];
         var index = 0;
@@ -13,7 +16,9 @@ public static class ContendersGenerator
             contenders[index] = new Contender { Name = name, Rank = ++index };
             if (index == amount) break;
         }
+        
+        Rng.Shuffle(contenders);
 
-        return contenders;
+        return new Queue<Contender>(contenders);
     }
 }
