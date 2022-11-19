@@ -55,28 +55,45 @@ public class Princess : IHostedService
         return sum / (i + 1);
     }
 
+    private Contender? GetBestContender()
+    {
+        var (i, contender) = _hall.GetNext();
+        while (i < ContendersAmount)
+        {
+            var eChoose = EChoose(i, GetRelativeRank(contender!));
+            var eSkip = _eSkipArray[i - 1];
+
+            if (eChoose >= eSkip)
+                break;
+                
+            (i, contender) = _hall.GetNext();
+        }
+
+        return contender;
+    }
+
+    public static int GetPoints(Contender? contender)
+    {
+        if (contender == null) return MonasteryPoints;
+
+        return contender.Rank switch
+        {
+            100 => 20,
+            98 => 50,
+            96 => 100,
+            _ => 0
+        };
+    }
+
     public Task StartAsync(CancellationToken cancellationToken)
     {
         _applicationTask = Task.Run(() =>
         {
-            var (i, contender) = _hall.GetNext();
-            while (i < ContendersAmount)
-            {
-                var eChoose = EChoose(i, GetRelativeRank(contender));
-                var eSkip = _eSkipArray[i - 1];
-
-                if (eChoose >= eSkip)
-                    break;
-                
-                (i, contender) = _hall.GetNext();
-            }
+            var contender = GetBestContender();
+            var points = GetPoints(contender);
 
             Logger.Log("-----");
-            if (contender != null)
-                Logger.Log(contender.Rank > BadMarriageRankBorder ? contender.Rank : BadMarriagePoints);
-            else
-                Logger.Log(MonasteryPoints);
-            
+            Logger.Log(points);
             _applicationLifetime.StopApplication();
         }, cancellationToken);
         
