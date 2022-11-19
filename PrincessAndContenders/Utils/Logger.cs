@@ -1,4 +1,4 @@
-﻿namespace lab2;
+﻿namespace PrincessAndContenders;
 
 public static class Logger
 {

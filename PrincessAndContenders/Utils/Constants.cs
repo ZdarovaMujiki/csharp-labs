@@ -1,4 +1,4 @@
-﻿namespace lab1;
+﻿namespace PrincessAndContenders;
 
 public static class Constants
 {

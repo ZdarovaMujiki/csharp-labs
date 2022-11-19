@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Hosting;
-using static lab2.Constants;
+using static PrincessAndContenders.Constants;
 
-namespace lab2;
+namespace PrincessAndContenders;
 
 public class Princess : IHostedService
 {

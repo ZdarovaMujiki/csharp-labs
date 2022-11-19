@@ -1,4 +1,4 @@
-﻿namespace lab2;
+﻿namespace PrincessAndContenders;
 
 [Serializable]
 public class EmptyHallException : Exception

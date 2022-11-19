@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace lab2;
+namespace PrincessAndContenders;
 
 static class Program
 {

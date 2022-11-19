@@ -1,6 +1,6 @@
-using lab2;
+using PrincessAndContenders;
 
-namespace lab3.Tests;
+namespace Tests;
 
 public class HallTests
 {
