@@ -1,10 +1,14 @@
-﻿using static PrincessAndContenders.Constants;
+﻿using PrincessAndContenders.Exceptions;
+using PrincessAndContenders.Utils;
 
 namespace PrincessAndContenders;
 
 public class Hall
 {
-    public readonly Queue<Contender> Contenders = ContendersGenerator.GenerateContenders(ContendersAmount);
+    public readonly Queue<Contender> Contenders;
+
+    public Hall(Queue<Contender> contenders) =>
+        Contenders = contenders;
 
     public Contender GetNext()
     {

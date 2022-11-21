@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Hosting;
-using static PrincessAndContenders.Constants;
+using PrincessAndContenders.Utils;
+using static PrincessAndContenders.Utils.Constants;
 
 namespace PrincessAndContenders;
 
@@ -8,12 +9,12 @@ public class Princess : IHostedService
     private readonly SortedSet<Contender> _contendersTop;
     private readonly double[] _eSkipArray = new double[ContendersAmount];
     
-    private readonly IHostApplicationLifetime _applicationLifetime;
+    private readonly IHostApplicationLifetime? _applicationLifetime;
     private readonly Hall _hall;
     
     private Task? _applicationTask;
 
-    public Princess(Hall hall, Friend friend, IHostApplicationLifetime applicationLifetime)
+    public Princess(Hall hall, Friend friend, IHostApplicationLifetime? applicationLifetime)
     {
         _applicationLifetime = applicationLifetime;
         _hall = hall;
@@ -55,7 +56,16 @@ public class Princess : IHostedService
         return sum / (i + 1);
     }
 
-    private Contender? GetBestContender()
+    public void GetMarried()
+    {
+        var contender = GetBestContender();
+        var points = GetPoints(contender);
+
+        Logger.Log("-----");
+        Logger.Log(points);
+    }
+
+    public Contender? GetBestContender()
     {
         for (var i = 0; i < ContendersAmount; ++i)
         {
@@ -88,12 +98,8 @@ public class Princess : IHostedService
     {
         _applicationTask = Task.Run(() =>
         {
-            var contender = GetBestContender();
-            var points = GetPoints(contender);
-
-            Logger.Log("-----");
-            Logger.Log(points);
-            _applicationLifetime.StopApplication();
+            GetMarried();
+            _applicationLifetime?.StopApplication();
         }, cancellationToken);
         
         return Task.CompletedTask;

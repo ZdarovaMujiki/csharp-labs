@@ -1,6 +1,6 @@
 ﻿namespace PrincessAndContenders.Utils;
 
-static class Utils
+public static class Utils
 {
     public static void Shuffle<T> (this Random rng, T[] array)
     {

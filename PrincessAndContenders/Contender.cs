@@ -9,4 +9,10 @@ public record Contender
     {
         return $"{Name} {Rank}";
     }
+
+    public static Contender Parse(string stringContender)
+    {
+        var fields = stringContender.Split(" ");
+        return new Contender {Name = $"{fields[0]} {fields[1]}", Rank = int.Parse(fields[2])};
+    }
 }

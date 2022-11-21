@@ -1,4 +1,4 @@
-﻿namespace PrincessAndContenders;
+﻿namespace PrincessAndContenders.Utils;
 
 public static class Constants
 {

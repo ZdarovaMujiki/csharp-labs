@@ -1,8 +1,10 @@
-﻿namespace PrincessAndContenders;
+﻿using PrincessAndContenders.Exceptions;
+
+namespace PrincessAndContenders;
 
 public class Friend : IComparer<Contender>
 {
-    private Hall _hall;
+    private readonly Hall _hall;
     public Friend(Hall hall) => _hall = hall;
 
     public int Compare(Contender? x, Contender? y)

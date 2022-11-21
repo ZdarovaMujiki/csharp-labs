@@ -1,4 +1,4 @@
-﻿namespace PrincessAndContenders;
+﻿namespace PrincessAndContenders.Exceptions;
 
 [Serializable]
 public class EmptyHallException : Exception
