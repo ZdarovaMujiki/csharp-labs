@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using NDesk.Options;
 using PrincessAndContenders.Data;
 using PrincessAndContenders.Utils;
 
@@ -6,12 +7,20 @@ namespace PrincessAndContenders.Simulator;
 
 static class Program
 {
-    public static void Main()
+    public static void Main(string[] args)
     {
-        Clear();
-        Generate(100);
-        Simulate(1);
-        SimulateAll();
+        var options = new OptionSet
+        {
+            { "g|generate", "Generate 100 attempts", _ => Generate(100) },
+            { "c|clear", "Remove all attempts from database.", _ => Clear() },
+            { "s|simulate=", "Run attempt by id", (int id) => Simulate(id) },
+            { "a|average", "Run all attempts and get average points", _ => SimulateAll() },
+        };
+
+        if (args.Length == 0)
+            options.WriteOptionDescriptions(Console.Out);
+        
+        options.Parse(args);
     }
 
     private static void Generate(int amount)
@@ -70,7 +79,7 @@ static class Program
         Console.WriteLine("Average: " + (double)sumPoints / attempts.Length);
     }
 
-    public static void Clear()
+    private static void Clear()
     {
         using var context = new Context();
         context.Attempts.ExecuteDelete();

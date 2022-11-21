@@ -12,4 +12,8 @@
       <ProjectReference Include="..\PrincessAndContenders\PrincessAndContenders.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="NDesk.Options" Version="0.2.1" />
+    </ItemGroup>
+
 </Project>
