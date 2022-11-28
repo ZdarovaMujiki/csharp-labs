@@ -56,13 +56,14 @@ public class Princess : IHostedService
         return sum / (i + 1);
     }
 
-    public void GetMarried()
+    public Contender? GetMarried()
     {
         var contender = GetBestContender();
         var points = GetPoints(contender);
 
         Logger.Log("-----");
         Logger.Log(points);
+        return contender;
     }
 
     public Contender? GetBestContender()
