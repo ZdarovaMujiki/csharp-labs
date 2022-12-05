@@ -1,8 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-
-namespace PrincessAndContenders;
+﻿namespace PrincessAndContenders;
 
 static class Program
 {
@@ -14,17 +10,21 @@ static class Program
     private static IHostBuilder CreateHostBuilder(string[] args)
     {
         return Host.CreateDefaultBuilder(args)
-            .ConfigureLogging(builder => 
-                builder.AddSimpleConsole(options =>
-                {
-                    options.IncludeScopes = false;
-                    options.SingleLine = true;
-                }))
-            .ConfigureServices((_, services) =>
+            // .ConfigureLogging(builder => 
+                // builder.AddSimpleConsole(options =>
+                // {
+                    // options.IncludeScopes = false;
+                    // options.SingleLine = true;
+                // }))
+            .ConfigureWebHostDefaults(webBuilder =>
             {
-                services.AddHostedService<Princess>();
-                services.AddScoped<Hall>();
-                services.AddScoped<Friend>();
+                webBuilder.UseStartup<Startup>();
             });
+            // .ConfigureServices((_, services) =>
+            // {
+                // services.AddHostedService<Princess>();
+                // services.AddScoped<Hall>();
+                // services.AddScoped<Friend>();
+            // });
     }
 }
