@@ -1,14 +1,19 @@
-﻿using PrincessAndContenders.Exceptions;
+﻿using PrincessAndContenders.Data;
+using PrincessAndContenders.Exceptions;
+using PrincessAndContenders.Interfaces;
 using PrincessAndContenders.Utils;
 
 namespace PrincessAndContenders;
 
-public class Hall
+public class Hall : IHall
 {
-    public readonly Queue<Contender> Contenders;
+    public Queue<Contender> Contenders { get; set; }
 
     public Hall(Queue<Contender> contenders) =>
         Contenders = contenders;
+    
+    public Hall(IContendersGenerator contendersGenerator) =>
+        Contenders = contendersGenerator.GenerateContenders();
 
     public Contender GetNext()
     {

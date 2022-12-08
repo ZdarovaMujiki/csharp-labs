@@ -23,7 +23,11 @@ public class DatabaseTests
         
         _context =  new DbContext(_options);
 
-        _simulator = new Simulator(_context);
+        var hall = new Hall(new Queue<Contender>());
+        var friend = new Friend(hall);
+        var princess = new Princess(hall, friend, null);
+        _simulator = new Simulator(_context, hall, princess, null);
+        _simulator.Clear();
     }
     
     [Test]
@@ -36,19 +40,16 @@ public class DatabaseTests
     [Test]
     public void Simulate_ShouldSimulate()
     {
-        const int attemptNumber = 1;
         _simulator.Generate(Amount);
-        var attempt = _context.Set<Attempt>().Find(attemptNumber);
-
-        Assert.That(attempt, Is.Not.Null);
+        var attempt = _context.Set<Attempt>().First();
         
-        var contenders = new Queue<Contender>(attempt!.Contenders);
+        var contenders = new Queue<Contender>(attempt.Contenders);
         var hall = new Hall(contenders);
         var friend = new Friend(hall);
         var princess = new Princess(hall, friend, null);
         var contenderA = princess.GetMarried();
         
-        var contenderB = _simulator.Simulate(attemptNumber);
+        var contenderB = _simulator.Simulate(attempt.Id);
 
         Assert.That(contenderA, Is.EqualTo(contenderB));
     }

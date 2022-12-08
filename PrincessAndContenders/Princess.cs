@@ -1,20 +1,22 @@
 ﻿using Microsoft.Extensions.Hosting;
+using PrincessAndContenders.Data;
+using PrincessAndContenders.Interfaces;
 using PrincessAndContenders.Utils;
 using static PrincessAndContenders.Utils.Constants;
 
 namespace PrincessAndContenders;
 
-public class Princess : IHostedService
+public class Princess : IPrincess
 {
     private readonly SortedSet<Contender> _contendersTop;
     private readonly double[] _eSkipArray = new double[ContendersAmount];
     
     private readonly IHostApplicationLifetime? _applicationLifetime;
-    private readonly Hall _hall;
+    private readonly IHall _hall;
     
     private Task? _applicationTask;
 
-    public Princess(Hall hall, Friend friend, IHostApplicationLifetime? applicationLifetime)
+    public Princess(IHall hall, IFriend friend, IHostApplicationLifetime? applicationLifetime)
     {
         _applicationLifetime = applicationLifetime;
         _hall = hall;
@@ -68,6 +70,7 @@ public class Princess : IHostedService
 
     public Contender? GetBestContender()
     {
+        _contendersTop.Clear();
         for (var i = 0; i < ContendersAmount; ++i)
         {
             var contender = _hall.GetNext();
