@@ -1,8 +1,5 @@
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using PrincessAndContenders.Interfaces;
-using PrincessAndContenders.Utils;
+using Microsoft.EntityFrameworkCore;
+using PrincessAndContenders.Data;
 
 namespace PrincessAndContenders;
 
@@ -18,6 +15,10 @@ static class Program
         return Host.CreateDefaultBuilder(args)
             .ConfigureWebHostDefaults(webBuilder =>
             {
+                webBuilder.ConfigureServices((_, services) =>
+                {
+                    services.AddDbContext<DbContext, Context>();
+                });
                 webBuilder.UseStartup<Startup>();
             });
     }

@@ -18,4 +18,8 @@
       <ProjectReference Include="..\PrincessAndContenders.Data\PrincessAndContenders.Data.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Include="App.config" />
+    </ItemGroup>
+
 </Project>
