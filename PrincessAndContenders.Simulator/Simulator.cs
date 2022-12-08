@@ -14,13 +14,12 @@ public class Simulator
     public void Generate(int amount)
     {
         _context.Database.EnsureCreated();
+        var contendersGenerator = new ContendersGenerator(Constants.ContendersAmount);
 
-        var random = new Random();
         for (var i = 0; i < amount; ++i)
         {
-            var contenders = ContendersGenerator.GenerateContenders(100).ToArray();
-            random.Shuffle(contenders);
-            _context.Set<Attempt>().Add(new Attempt { Contenders = contenders });
+            var contenders = contendersGenerator.GenerateContenders();
+            _context.Set<Attempt>().Add(new Attempt { Contenders = contenders.ToList() });
         }
 
         _context.SaveChanges();
@@ -71,7 +70,8 @@ public class Simulator
 
     public void Clear()
     {
-        _context.Set<Attempt>().ExecuteDelete();
+        _context.Set<Attempt>().RemoveRange(_context.Set<Attempt>());
+        _context.Set<Contender>().RemoveRange(_context.Set<Contender>());
         _context.SaveChanges();
     }
 }

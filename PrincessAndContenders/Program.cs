@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using PrincessAndContenders.Interfaces;
+using PrincessAndContenders.Utils;
 
 namespace PrincessAndContenders;
 
@@ -23,8 +25,9 @@ static class Program
             .ConfigureServices((_, services) =>
             {
                 services.AddHostedService<Princess>();
-                services.AddScoped<Hall>();
-                services.AddScoped<Friend>();
+                services.AddScoped<IHall, Hall>();
+                services.AddScoped<IFriend, Friend>();
+                services.AddSingleton<IContendersGenerator>(new ContendersGenerator(Constants.ContendersAmount));
             });
     }
 }

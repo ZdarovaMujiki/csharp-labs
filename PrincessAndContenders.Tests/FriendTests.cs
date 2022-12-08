@@ -1,4 +1,5 @@
 using PrincessAndContenders;
+using PrincessAndContenders.Data;
 using PrincessAndContenders.Exceptions;
 
 namespace Tests;

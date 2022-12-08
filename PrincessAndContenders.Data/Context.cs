@@ -1,15 +1,21 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Configuration;
+using Microsoft.EntityFrameworkCore;
 
 namespace PrincessAndContenders.Data;
 
 public class Context: DbContext
 {
     public DbSet<Attempt> Attempts { get; set; }
+    public DbSet<Contender> Contenders { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        const string connectionString = @"Server=localhost;Database=postgres;
-                		User Id=postgres;Password=123";
-        optionsBuilder.UseNpgsql(connectionString);
+        var appSettings = ConfigurationManager.AppSettings;
+        optionsBuilder.UseNpgsql(
+            $"Server={appSettings.Get("Server")};" +
+            $"Database={appSettings["Database"]};" +
+            $"User Id={appSettings["User"]};" +
+            $"Password={appSettings["Password"]}"
+        );
     }
 }

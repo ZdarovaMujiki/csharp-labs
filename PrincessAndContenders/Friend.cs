@@ -1,11 +1,13 @@
-﻿using PrincessAndContenders.Exceptions;
+﻿using PrincessAndContenders.Data;
+using PrincessAndContenders.Exceptions;
+using PrincessAndContenders.Interfaces;
 
 namespace PrincessAndContenders;
 
-public class Friend : IComparer<Contender>
+public class Friend : IFriend
 {
-    private readonly Hall _hall;
-    public Friend(Hall hall) => _hall = hall;
+    private readonly IHall _hall;
+    public Friend(IHall hall) => _hall = hall;
 
     public int Compare(Contender? x, Contender? y)
     {

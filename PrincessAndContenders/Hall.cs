@@ -1,18 +1,22 @@
-﻿using PrincessAndContenders.Exceptions;
+﻿using PrincessAndContenders.Data;
+using PrincessAndContenders.Exceptions;
+using PrincessAndContenders.Interfaces;
 using PrincessAndContenders.Utils;
 
 namespace PrincessAndContenders;
 
-public class Hall
+public class Hall : IHall
 {
-    public readonly Queue<Contender> Contenders;
+    private readonly Queue<Contender> _contenders;
 
     public Hall(Queue<Contender> contenders) =>
-        Contenders = contenders;
+        _contenders = contenders;
+    public Hall(IContendersGenerator contendersGenerator) =>
+        _contenders = contendersGenerator.GenerateContenders();
 
     public Contender GetNext()
     {
-        if (!Contenders.TryDequeue(out var contender))
+        if (!_contenders.TryDequeue(out var contender))
             throw new EmptyHallException();
         
         Logger.Log(contender.Name);
@@ -21,5 +25,5 @@ public class Hall
     }
 
     public bool Contains(Contender? contender) =>
-        contender != null && Contenders.Contains(contender);
+        contender != null && _contenders.Contains(contender);
 }
