@@ -1,5 +1,8 @@
-﻿using NDesk.Options;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using PrincessAndContenders.Data;
+using PrincessAndContenders.Interfaces;
 
 namespace PrincessAndContenders.Simulator;
 
@@ -7,17 +10,19 @@ static class Program
 {
     public static void Main(string[] args)
     {
-        var simulator = new Simulator(new Context());
-        var options = new OptionSet
-        {
-            { "g|generate", "Generate 100 attempts", _ => simulator.Generate(100) },
-            { "c|clear", "Remove all attempts from database.", _ => simulator.Clear() },
-            { "s|simulate=", "Run attempt by id", (int id) => simulator.Simulate(id) },
-            { "a|average", "Run all attempts and get average points", _ => simulator.SimulateAll() },
-        };
-        if (args.Length == 0)
-            options.WriteOptionDescriptions(Console.Out);
-        
-        options.Parse(args);
+        CreateHostBuilder(args).Build().Run();
+    }
+    
+    private static IHostBuilder CreateHostBuilder(string[] args)
+    {
+        return Host.CreateDefaultBuilder(args)
+            .ConfigureServices((_, services) =>
+            {
+                services.AddHostedService<Simulator>();
+                services.AddDbContext<DbContext, Context>();
+                services.AddScoped<IPrincess, Princess>();
+                services.AddScoped<IFriend, Friend>();
+                services.AddSingleton<IHall>(new Hall(new Queue<Contender>()));
+            });
     }
 }

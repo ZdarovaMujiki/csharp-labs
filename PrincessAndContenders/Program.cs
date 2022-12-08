@@ -16,12 +16,6 @@ static class Program
     private static IHostBuilder CreateHostBuilder(string[] args)
     {
         return Host.CreateDefaultBuilder(args)
-            .ConfigureLogging(builder => 
-                builder.AddSimpleConsole(options =>
-                {
-                    options.IncludeScopes = false;
-                    options.SingleLine = true;
-                }))
             .ConfigureServices((_, services) =>
             {
                 services.AddHostedService<Princess>();

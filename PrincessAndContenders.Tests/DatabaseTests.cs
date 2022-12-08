@@ -23,7 +23,10 @@ public class DatabaseTests
         
         _context =  new DbContext(_options);
 
-        _simulator = new Simulator(_context);
+        var hall = new Hall(new Queue<Contender>());
+        var friend = new Friend(hall);
+        var princess = new Princess(hall, friend, null);
+        _simulator = new Simulator(_context, hall, princess, null);
         _simulator.Clear();
     }
     

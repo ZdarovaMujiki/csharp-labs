@@ -70,6 +70,7 @@ public class Princess : IPrincess
 
     public Contender? GetBestContender()
     {
+        _contendersTop.Clear();
         for (var i = 0; i < ContendersAmount; ++i)
         {
             var contender = _hall.GetNext();

@@ -1,15 +1,27 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 using PrincessAndContenders.Data;
+using PrincessAndContenders.Interfaces;
 using PrincessAndContenders.Utils;
 
 namespace PrincessAndContenders.Simulator;
 
-public class Simulator
+public class Simulator : IHostedService
 {
     private readonly DbContext _context;
+    private readonly IHall _hall;
+    private readonly IPrincess _princess;
 
-    public Simulator(DbContext context) =>
+    private readonly IHostApplicationLifetime? _applicationLifetime;
+    private Task? _applicationTask;
+
+    public Simulator(DbContext context, IHall hall, IPrincess princess, IHostApplicationLifetime? applicationLifetime)
+    {
         _context = context;
+        _hall = hall;
+        _princess = princess;
+        _applicationLifetime = applicationLifetime;
+    }
 
     public void Generate(int amount)
     {
@@ -32,12 +44,9 @@ public class Simulator
         var attempt = _context.Set<Attempt>().Find(i);
         if (attempt == null)
             return null;
-        
-        var contenders = new Queue<Contender>(attempt.Contenders);
-        var hall = new Hall(contenders);
-        var friend = new Friend(hall);
-        var princess = new Princess(hall, friend, null);
-        return princess.GetMarried();
+
+        _hall.Contenders = new Queue<Contender>(attempt.Contenders);
+        return _princess.GetMarried();
     }
 
     public void SimulateAll()
@@ -53,13 +62,9 @@ public class Simulator
         var sumPoints = 0;
         foreach (var attempt in attempts)
         {
-            var contenders = new Queue<Contender>(attempt.Contenders);
-            var hall = new Hall(contenders);
-            var friend = new Friend(hall);
-            var princess = new Princess(hall, friend, null);
+            _hall.Contenders = new Queue<Contender>(attempt.Contenders);
 
-            var best = princess.GetBestContender();
-            var points = Princess.GetPoints(best);
+            var points = Princess.GetPoints(_princess.GetBestContender());
             Console.WriteLine(points);
             
             sumPoints += points;
@@ -73,5 +78,25 @@ public class Simulator
         _context.Set<Attempt>().RemoveRange(_context.Set<Attempt>());
         _context.Set<Contender>().RemoveRange(_context.Set<Contender>());
         _context.SaveChanges();
+    }
+
+    public Task StartAsync(CancellationToken cancellationToken)
+    {
+        _applicationTask = Task.Run(() =>
+        {
+            Generate(100);
+            SimulateAll();
+            _applicationLifetime?.StopApplication();
+        }, cancellationToken);
+        
+        return Task.CompletedTask;
+    }
+
+    public async Task StopAsync(CancellationToken cancellationToken)
+    {
+        if (_applicationTask != null)
+        {
+            await _applicationTask;
+        }
     }
 }
