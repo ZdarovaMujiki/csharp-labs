@@ -1,24 +1,17 @@
-﻿using System.Net.Http.Json;
-using PrincessAndContenders.Controllers;
-using PrincessAndContenders.Utils;
+﻿using PrincessAndContenders.Utils;
+using static PrincessAndContenders.Utils.Constants;
+
 namespace PrincessAndContenders.Client;
 
 public class Princess
 {
-    private static readonly HttpClient HttpClient = new();
     private readonly SortedSet<string> _contendersNamesTop = new(new ContendersComparator());
-    private readonly double[] _eSkipArray = new double[Constants.ContendersAmount];
-    
+    private readonly double[] _eSkipArray = new double[ContendersAmount];
     private class ContendersComparator : IComparer<string>
     {
         public int Compare(string name1, string name2)
         {
-            var names = new ContendersNames { name1 = name1, name2 = name2 };
-            var response = HttpClient.PostAsync("/friend/100/compare?session=228", JsonContent.Create(names));
-            response.Wait();
-            var str = response.Result.Content.ReadAsStringAsync();
-            str.Wait();
-            var name = str.Result;
+            var name = Api.CompareContenders(name1, name2);
             
             return name == name1 ? 1 : -1;
         }
@@ -26,10 +19,8 @@ public class Princess
 
     public Princess()
     {
-        HttpClient.BaseAddress = new Uri("http://localhost:5000");
-        
         var length = _eSkipArray.Length;
-        _eSkipArray[length - 1] = Constants.MonasteryPoints;
+        _eSkipArray[length - 1] = MonasteryPoints;
 
         for (var i = length - 2; i >= 0; i--)
             _eSkipArray[i] = ESkip(i);
@@ -50,9 +41,9 @@ public class Princess
     }
 
     private double EChoose(int i, int rank) =>
-        _contendersNamesTop.Count - rank + 1 < Constants.BadMarriageRankBorder
-            ? rank * (Constants.ContendersAmount + 1D) / (i + 1)
-            : Constants.BadMarriagePoints;
+        _contendersNamesTop.Count - rank + 1 < BadMarriageRankBorder
+            ? rank * (ContendersAmount + 1D) / (i + 1)
+            : BadMarriagePoints;
 
     private double ESkip(int i)
     {
@@ -63,28 +54,23 @@ public class Princess
         return sum / (i + 1);
     }
 
-    public void GetMarried()
+    public async Task GetMarried()
     {
-        var response = HttpClient.PostAsync("/hall/reset?session=228", null);
-        response.Wait();
+        await Api.ResetSession();
         
-        var contender = GetBestContender();
-        var points = GetPoints(contender);
+        var contender = await GetBestContender();
+        var points = await GetPoints(contender);
 
         Logger.Log("-----");
         Logger.Log(points);
     }
 
-    public string? GetBestContender()
+    private async Task<string?> GetBestContender()
     {
         _contendersNamesTop.Clear();
-        for (var i = 0; i < Constants.ContendersAmount; ++i)
+        for (var i = 0; i < ContendersAmount; ++i)
         {
-            var response = HttpClient.PostAsync("/hall/100/next?session=228", null);
-            response.Wait();
-            var nameResponse = response.Result.Content.ReadAsStringAsync();
-            nameResponse.Wait();
-            var name = nameResponse.Result;
+            var name = await Api.GetNextContender();
 
             var eChoose = EChoose(i + 1, GetRelativeRank(name));
             var eSkip = _eSkipArray[i];
@@ -96,23 +82,19 @@ public class Princess
         return null;
     }
 
-    public static int GetPoints(string? contenderName)
+    private static async Task<int> GetPoints(string? contenderName)
     {
-        if (contenderName == null) return Constants.MonasteryPoints;
-        var response = HttpClient.PostAsync("/hall/100/select?session=228", null);
-        response.Wait();
-        var rankResponse = response.Result.Content.ReadAsStringAsync();
-        rankResponse.Wait();
-        var rank = rankResponse.Result;
+        if (contenderName == null) return MonasteryPoints;
+        var rank = await Api.GetContenderRank();
         Console.WriteLine(contenderName);
         Console.WriteLine(rank);
 
         return rank switch
         {
-            "100" => 20,
-            "98" => 50,
-            "96" => 100,
-            _ => 0
+            (int)ContendersRanks.First => (int)ContendersPoints.Worst,
+            (int)ContendersRanks.Third => (int)ContendersPoints.Fine,
+            (int)ContendersRanks.Fifth => (int)ContendersPoints.Best,
+            _ => BadMarriagePoints
         };
     }
 }

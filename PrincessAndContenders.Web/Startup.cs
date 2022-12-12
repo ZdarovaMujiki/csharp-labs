@@ -1,4 +1,4 @@
-﻿namespace PrincessAndContenders;
+﻿namespace PrincessAndContenders.Web;
 
 internal class Startup
 {

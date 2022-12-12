@@ -1,6 +1,5 @@
-using Microsoft.EntityFrameworkCore;
-using PrincessAndContenders.Data;
-using PrincessAndContenders.Data.Repositories;
+using PrincessAndContenders.Interfaces;
+using PrincessAndContenders.Utils;
 
 namespace PrincessAndContenders;
 
@@ -14,16 +13,12 @@ static class Program
     private static IHostBuilder CreateHostBuilder(string[] args)
     {
         return Host.CreateDefaultBuilder(args)
-            .ConfigureWebHostDefaults(webBuilder =>
+            .ConfigureServices((_, services) =>
             {
-                webBuilder.ConfigureServices((_, services) =>
-                {
-                    services.AddDbContext<DbContext, Context>();
-                    services.AddScoped<ContenderRepository>();
-                    services.AddScoped<AttemptRepository>();
-                    services.AddScoped<SessionRepository>();
-                });
-                webBuilder.UseStartup<Startup>();
+                services.AddHostedService<Princess>();
+                services.AddScoped<IHall, Hall>();
+                services.AddScoped<IFriend, Friend>();
+                services.AddSingleton<IContendersGenerator>(new ContendersGenerator(Constants.ContendersAmount));
             });
     }
 }

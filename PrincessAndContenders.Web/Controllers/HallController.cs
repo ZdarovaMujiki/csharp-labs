@@ -2,7 +2,7 @@
 using PrincessAndContenders.Data;
 using PrincessAndContenders.Data.Repositories;
 
-namespace PrincessAndContenders.Controllers;
+namespace PrincessAndContenders.Web.Controllers;
 
 [ApiController]
 [Route("hall")]
@@ -22,7 +22,7 @@ public class HallController : ControllerBase
         _sessionRepository.RemoveSession(sessionId);
 
     [HttpPost("{attemptId:int}/next")]
-    public string GetNextContender(int attemptId, [FromQuery(Name="session")] int sessionId)
+    public string? GetNextContender(int attemptId, [FromQuery(Name="session")] int sessionId)
     {
         var session = _sessionRepository.GetSession(sessionId, attemptId);
 
@@ -40,6 +40,8 @@ public class HallController : ControllerBase
                 NextContenderId = 0
             };
         }
+        else if (session.NextContenderId == session.Attempt.Contenders.Count)
+            return null;
 
         var contender = session.Attempt.Contenders[session.NextContenderId];
         session.NextContenderId++;

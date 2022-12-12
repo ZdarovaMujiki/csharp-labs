@@ -8,6 +8,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\PrincessAndContenders.Web\PrincessAndContenders.Web.csproj" />
       <ProjectReference Include="..\PrincessAndContenders\PrincessAndContenders.csproj" />
     </ItemGroup>
 

@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Hosting;
-using PrincessAndContenders.Data;
+﻿using PrincessAndContenders.Data;
 using PrincessAndContenders.Interfaces;
 using PrincessAndContenders.Utils;
 using static PrincessAndContenders.Utils.Constants;
@@ -91,10 +90,10 @@ public class Princess : IPrincess
 
         return contender.Rank switch
         {
-            100 => 20,
-            98 => 50,
-            96 => 100,
-            _ => 0
+            (int)ContendersRanks.First => (int)ContendersPoints.Worst,
+            (int)ContendersRanks.Third => (int)ContendersPoints.Fine,
+            (int)ContendersRanks.Fifth => (int)ContendersPoints.Best,
+            _ => BadMarriagePoints
         };
     }
 

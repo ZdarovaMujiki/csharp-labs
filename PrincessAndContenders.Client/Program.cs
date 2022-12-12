@@ -1,10 +1,10 @@
-﻿using PrincessAndContenders.Client;
+﻿namespace PrincessAndContenders.Client;
 
-class Program
+static class Program
 {
-    public static void Main(string[] args)
+    public static async Task Main(string[] args)
     {
         var princess = new Princess();
-        princess.GetMarried();
+        await princess.GetMarried();
     }
 }
