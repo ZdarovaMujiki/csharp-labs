@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using PrincessAndContenders.Data;
+using PrincessAndContenders.Data.Repositories;
 
 namespace PrincessAndContenders;
 
@@ -18,6 +19,9 @@ static class Program
                 webBuilder.ConfigureServices((_, services) =>
                 {
                     services.AddDbContext<DbContext, Context>();
+                    services.AddScoped<ContenderRepository>();
+                    services.AddScoped<AttemptRepository>();
+                    services.AddScoped<SessionRepository>();
                 });
                 webBuilder.UseStartup<Startup>();
             });

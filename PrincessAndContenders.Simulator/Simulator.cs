@@ -41,7 +41,10 @@ public class Simulator : IHostedService
     {
         _context.Database.EnsureCreated();
 
-        var attempt = _context.Set<Attempt>().Find(i);
+        var attempt = _context.Set<Attempt>()
+            .Include("Contenders")
+            .FirstOrDefault(attempt => attempt.Id == i);
+        
         if (attempt == null)
             return null;
 
@@ -84,8 +87,9 @@ public class Simulator : IHostedService
     {
         _applicationTask = Task.Run(() =>
         {
-            Generate(100);
-            SimulateAll();
+            Simulate(100);
+            // Generate(100);
+            // SimulateAll();
             _applicationLifetime?.StopApplication();
         }, cancellationToken);
         

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using PrincessAndContenders.Data;
+using PrincessAndContenders.Data.Repositories;
 
 namespace PrincessAndContenders.Controllers;
 
@@ -8,33 +8,55 @@ namespace PrincessAndContenders.Controllers;
 [Route("hall")]
 public class HallController : ControllerBase
 {
-    private readonly DbContext _context;
-    private int _order;
+    private readonly SessionRepository _sessionRepository;
+    private readonly AttemptRepository _attemptRepository;
 
-    public HallController(DbContext context) =>
-        _context = context;
-
-    [HttpGet("reset")]
-    public string Reset()
+    public HallController(SessionRepository sessionRepository, AttemptRepository attemptRepository)
     {
-        return "reset";
+        _sessionRepository = sessionRepository;
+        _attemptRepository = attemptRepository;
+    }
+
+    [HttpPost("reset")]
+    public void Reset([FromQuery(Name="session")] int sessionId) =>
+        _sessionRepository.RemoveSession(sessionId);
+
+    [HttpPost("{attemptId:int}/next")]
+    public string GetNextContender(int attemptId, [FromQuery(Name="session")] int sessionId)
+    {
+        var session = _sessionRepository.GetSession(sessionId, attemptId);
+
+        if (session == null)
+        {
+            var attempt = _attemptRepository.GetAttempt(attemptId);
+        
+            if (attempt == null)
+                throw new HttpRequestException("Attempt not found");
+        
+            session = new Session
+            {
+                SessionId = sessionId,
+                Attempt = attempt,
+                NextContenderId = 0
+            };
+        }
+
+        var contender = session.Attempt.Contenders[session.NextContenderId];
+        session.NextContenderId++;
+        
+        _sessionRepository.UpdateSession(session);
+        
+        return contender.Name;
     }
     
-    [HttpGet("{attemptId:int}/next")]
-    public string GetNextContender(int attemptId)
+    [HttpPost("{attemptId:int}/select")]
+    public int GetRank(int attemptId, [FromQuery(Name="session")] int sessionId)
     {
-        _context.Database.EnsureCreated();
-        var attempt = _context.Set<Attempt>()
-            .Include("Contenders")
-            .FirstOrDefault(x => x.Id == attemptId);
+        var session = _sessionRepository.GetSession(sessionId, attemptId);
+        
+        if (session == null)
+            throw new HttpRequestException("Session not found");
 
-        var contenders = attempt.Contenders;
-        return contenders[_order].Name;
-    }
-    
-    [HttpGet("{attemptId:int}/select")]
-    public string GetRank(int attemptId)
-    {
-        return "rank of contender for attempt " + attemptId;
+        return session.Attempt.Contenders[session.NextContenderId].Rank;
     }
 }

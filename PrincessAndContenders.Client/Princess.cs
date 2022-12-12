@@ -14,7 +14,7 @@ public class Princess
         public int Compare(string name1, string name2)
         {
             var names = new ContendersNames { name1 = name1, name2 = name2 };
-            var response = HttpClient.PostAsync("/friend/123/compare", JsonContent.Create(names));
+            var response = HttpClient.PostAsync("/friend/100/compare?session=228", JsonContent.Create(names));
             response.Wait();
             var str = response.Result.Content.ReadAsStringAsync();
             str.Wait();
@@ -65,6 +65,9 @@ public class Princess
 
     public void GetMarried()
     {
+        var response = HttpClient.PostAsync("/hall/reset?session=228", null);
+        response.Wait();
+        
         var contender = GetBestContender();
         var points = GetPoints(contender);
 
@@ -77,7 +80,7 @@ public class Princess
         _contendersNamesTop.Clear();
         for (var i = 0; i < Constants.ContendersAmount; ++i)
         {
-            var response = HttpClient.PostAsync("/hall/123/next", null);
+            var response = HttpClient.PostAsync("/hall/100/next?session=228", null);
             response.Wait();
             var nameResponse = response.Result.Content.ReadAsStringAsync();
             nameResponse.Wait();
@@ -96,11 +99,13 @@ public class Princess
     public static int GetPoints(string? contenderName)
     {
         if (contenderName == null) return Constants.MonasteryPoints;
-        var response = HttpClient.PostAsync("/hall/123/select", null);
+        var response = HttpClient.PostAsync("/hall/100/select?session=228", null);
         response.Wait();
         var rankResponse = response.Result.Content.ReadAsStringAsync();
         rankResponse.Wait();
         var rank = rankResponse.Result;
+        Console.WriteLine(contenderName);
+        Console.WriteLine(rank);
 
         return rank switch
         {
