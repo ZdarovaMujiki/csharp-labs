@@ -1,3 +1,4 @@
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using PrincessAndContenders.Data;
 using PrincessAndContenders.Data.Repositories;
@@ -18,6 +19,7 @@ static class Program
             {
                 webBuilder.ConfigureServices((_, services) =>
                 {
+                    services.AddMassTransit(x => x.UsingRabbitMq());
                     services.AddDbContext<DbContext, Context>();
                     services.AddScoped<ContenderRepository>();
                     services.AddScoped<AttemptRepository>();

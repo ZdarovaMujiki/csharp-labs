@@ -1,5 +1,4 @@
-﻿using PrincessAndContenders.Utils;
-using static PrincessAndContenders.Utils.Constants;
+﻿using static PrincessAndContenders.Utils.Constants;
 
 namespace PrincessAndContenders.Client;
 
@@ -7,6 +6,11 @@ public class Princess
 {
     private readonly SortedSet<string> _contendersNamesTop = new(new ContendersComparator());
     private readonly double[] _eSkipArray = new double[ContendersAmount];
+    private static Princess? _instance;
+    
+    public static Princess GetInstance() =>
+        _instance ??= new Princess();
+
     private class ContendersComparator : IComparer<string>
     {
         public int Compare(string name1, string name2)
@@ -53,36 +57,15 @@ public class Princess
 
         return sum / (i + 1);
     }
-
-    public async Task GetMarried()
+    public bool IsBestContender(int id, string name)
     {
-        await Api.ResetSession();
-        
-        var contender = await GetBestContender();
-        var points = await GetPoints(contender);
+        var eChoose = EChoose(id + 1, GetRelativeRank(name));
+        var eSkip = _eSkipArray[id];
 
-        Logger.Log("-----");
-        Logger.Log(points);
+        return eChoose >= eSkip;
     }
 
-    private async Task<string?> GetBestContender()
-    {
-        _contendersNamesTop.Clear();
-        for (var i = 0; i < ContendersAmount; ++i)
-        {
-            var name = await Api.GetNextContender();
-
-            var eChoose = EChoose(i + 1, GetRelativeRank(name));
-            var eSkip = _eSkipArray[i];
-
-            if (eChoose >= eSkip)
-                return name;
-        }
-
-        return null;
-    }
-
-    private static async Task<int> GetPoints(string? contenderName)
+    public async Task<int> GetPoints(string? contenderName)
     {
         if (contenderName == null) return MonasteryPoints;
         var rank = await Api.GetContenderRank();

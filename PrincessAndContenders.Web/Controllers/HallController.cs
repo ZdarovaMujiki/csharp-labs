@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Consumer;
+using MassTransit;
+using Microsoft.AspNetCore.Mvc;
 using PrincessAndContenders.Data;
 using PrincessAndContenders.Data.Repositories;
 
@@ -10,11 +12,13 @@ public class HallController : ControllerBase
 {
     private readonly SessionRepository _sessionRepository;
     private readonly AttemptRepository _attemptRepository;
+    private readonly IPublishEndpoint _publishEndpoint;
 
-    public HallController(SessionRepository sessionRepository, AttemptRepository attemptRepository)
+    public HallController(SessionRepository sessionRepository, AttemptRepository attemptRepository, IPublishEndpoint publishEndpoint)
     {
         _sessionRepository = sessionRepository;
         _attemptRepository = attemptRepository;
+        _publishEndpoint = publishEndpoint;
     }
 
     [HttpPost("reset")]
@@ -22,7 +26,7 @@ public class HallController : ControllerBase
         _sessionRepository.RemoveSession(sessionId);
 
     [HttpPost("{attemptId:int}/next")]
-    public string? GetNextContender(int attemptId, [FromQuery(Name="session")] int sessionId)
+    public async Task<IActionResult> GetNextContender(int attemptId, [FromQuery(Name="session")] int sessionId)
     {
         var session = _sessionRepository.GetSession(sessionId, attemptId);
 
@@ -41,14 +45,27 @@ public class HallController : ControllerBase
             };
         }
         else if (session.NextContenderId == session.Attempt.Contenders.Count)
-            return null;
+        {
+            await _publishEndpoint.Publish<NextContender>(new
+            {
+                session.NextContenderId,
+            });
+            return Ok();
+        }
+
 
         var contender = session.Attempt.Contenders[session.NextContenderId];
+        
+        await _publishEndpoint.Publish<NextContender>(new
+        {
+            Id = session.NextContenderId,
+            contender.Name,
+        });
+        
         session.NextContenderId++;
         
         _sessionRepository.UpdateSession(session);
-        
-        return contender.Name;
+        return Ok();
     }
     
     [HttpPost("{attemptId:int}/select")]
